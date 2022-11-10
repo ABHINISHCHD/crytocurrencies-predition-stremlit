@@ -1,4 +1,3 @@
-#from sqlalchemy import create_engine    
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -224,6 +223,35 @@ def create_dataset(dataset,timestamp):
     datay.append(dataset[i+timestamp])
   return np.array(datax),np.array(datay)
 
+# prediciting the unseen data
+def pred_for_n_days(input_100,x_input,n):
+    lst_out=[]
+    n_step=100
+    nextnumberofdays=n
+    i=0
+    while(i<nextnumberofdays) :
+        if (len(input_100)>160):
+            x_input=np.array(input_100[1:])
+            print("{} days input {}".format(i,x_input))
+            x_input=x_input .reshape(1,-1)
+            x_input=x_input .reshape((1,n_step,1))
+            yhat=model.predict(x_input)
+            print("{} days output {}".format(i,yhat))
+            input_100.extend(yhat[0].tolist())
+            input_100=input_100[1: ]
+            lst_out.extend(yhat.tolist())
+            i=i+1
+        else:
+            x_input=x_input .reshape(1,n_step,1)
+            yhat=model.predict (x_input)
+            input_100.extend(yhat[0].tolist())
+            print(len(input_100) )
+            lst_out.append(yhat.list())
+            i=i+1
+            print(lst_out)  
+            return lst_out
+
+
 st.write('')
 st.write('')
 st.write('--------------------------------------------------------')
@@ -237,7 +265,7 @@ st.write('')
 st.write('')
 currency_name=yf.Ticker(predected_currency)
 data=currency_name.history(period='max')
-data=np.array(data)
+data=np.ndarray(data)
 data=data.reshape(-1,1)
 scaler=MinMaxScaler(feature_range=(0,1))
 data=scaler.fit_transform(data)
@@ -246,10 +274,28 @@ list_out=[]
 list_out=model.predict(x_data)
 
 
-plt.plot(y_data)
-plt.plot(list_out)
-st.write(data)
-plt.plot(data)
+x_input=data[ (data. shape[0]-101):, :].reshape(1,-1)
+temp_input=list(x_input)
+temp_input=temp_input[0].tolist()
+
+lis=pred_for_n_days(temp_input,x_input, number_day_pred)
+
+entire_pred=np.concatenate((list_out, lis), axis=0)
+
+entire_pred=scaler.inverse_transform(entire_pred)
+y_data=scaler.inverse_transform(y_data)
+first=pd.Series(entire_pred.ravel())
+second=pd.Series(y_data.ravel())
+demo=pd.DataFrame([ first, second]).T
+demo.columns=['Predicited Data', 'Original Data']
+st.line_chart(demo)
+
+ 
+
+#plt.plot(y_data)
+#plt.plot(list_out)
+#st.write(data.reset_index()['Close'])
+#plt.plot(data.reset_index()['Close'])
 
 
 with st.expander("Description Of Model"):
