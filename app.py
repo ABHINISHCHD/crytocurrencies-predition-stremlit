@@ -1,11 +1,9 @@
-from wsgiref.simple_server import demo_app
 #from sqlalchemy import create_engine    
 import streamlit as st
 import pandas as pd
 import numpy as np
 import yfinance as yf
 import matplotlib.pyplot as plt
-from IPython.core.display import HTML
 from sklearn.preprocessing import MinMaxScaler
 #my_conn=create_engine("mysql://root:@localhost/test")
 import pickle
