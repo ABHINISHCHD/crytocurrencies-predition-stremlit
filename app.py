@@ -248,8 +248,8 @@ list_out=model.predict(x_data)
 
 plt.plot(y_data)
 plt.plot(list_out)
-#st.write(data.reset_index()['Close'])
-#plt.plot(data.reset_index()['Close'])
+st.write(data)
+plt.plot(data)
 
 
 with st.expander("Description Of Model"):
