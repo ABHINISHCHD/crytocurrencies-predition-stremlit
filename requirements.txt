@@ -6,4 +6,4 @@ scikit-learn==1.0.2
 matplotlib==3.3.4
 pickleshare==0.7.5
 keras==2.8.0
-tensorflow==2.10.0 
+tensorflow==2.9.2
